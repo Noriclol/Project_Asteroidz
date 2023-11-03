@@ -9,35 +9,77 @@
 Engine* engine = nullptr;
 
 
+
+void StartText()
+{
+	std::cout << "Welcome to Asteroids!" << std::endl;
+    std::cout << "Controls:" << std::endl;
+    std::cout << "W - Thrust" << std::endl;
+    std::cout << "A - Rotate Left" << std::endl;
+    std::cout << "D - Rotate Right" << std::endl;
+    std::cout << "Space - Fire" << std::endl;
+    std::cout << "##################" << std::endl;
+    std::cout << "Press Space to Start" << std::endl;
+}
+
+
 void Run() {
-
-
 
     bool isRunning = true;
 
-    std::chrono::high_resolution_clock::time_point lastTime = std::chrono::high_resolution_clock::now();
-    std::chrono::high_resolution_clock::time_point currentTime;
-    std::chrono::duration<float> elapsedTime;
+    
+
     while (isRunning) 
     {
-        isRunning = engine->HandleInput();
+		engine->ClearScreen();
 
-        //Time
-		currentTime = std::chrono::high_resolution_clock::now();
-		elapsedTime = currentTime - lastTime;
-		float deltaTime = elapsedTime.count();
-    	lastTime = currentTime;
 
-        //Engine
-        engine->ClearScreen();
+    	switch(engine->gameState)
+        {
+    		case GameState::LOADING:
 
-        engine->UpdateGameObjects(deltaTime);
-        engine->CheckCollisions();
-        engine->DrawGameObjects();
+    			StartText();
+    			engine->SpawnScene();
+				engine->gameState = GameState::READY;
+	            break;
+
+            case GameState::READY:
+
+                isRunning = engine->HandleInput();
+    			engine->Draw();
+	            break;
+
+            case GameState::RUNNING:
+
+
+                if(engine->timeManager->GetGameTime() > engine->timeSinceLastWave + engine->waveDelay && 
+                    engine->asteroidsDestroyedThisWave == engine->asteroidsCreatedThisWave)
+                {
+					engine->SpawnWave(engine->waveCount);
+                }
+
+				isRunning = engine->HandleInput();
+				engine->timeManager->Update();
+
+				engine->CheckCollisions();
+                engine->UpdateGameObjects(engine->timeManager->GetDeltaTime());
+				
+				engine->Draw();
+
+	            break;
+
+            case GameState::UNLOADING:
+
+	            break;
+
+	        default: 
+	            break;
+        }
 
         engine->PresentScreen(); 
     }
 }
+
 
 
 
@@ -51,8 +93,7 @@ int main(int argc, char* argv[])
         delete engine; 
         return 1;
     }
-
-    engine->SpawnScene();
+    
 
     Run();
 

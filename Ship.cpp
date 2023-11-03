@@ -7,10 +7,10 @@
 
 Ship::Ship() : Rigidbody()
 {
-    name = "Ship";
+    this->type = ObjectType::SHIP;
     pos.x = DISPLAY_WIDTH / 2;
     pos.y = DISPLAY_HEIGHT / 2;
-    radius *= 5;
+    radius = 20;
     isThrusting = false;
 	turn = 0;
 }
@@ -37,10 +37,11 @@ void Ship::Simulate(float timeStep)
         float rotationRadians = rotation * (3.14159265 / 180.0); // Convert rotation from degrees to radians
         acceleration.x += (SHIP_THRUST * sin(rotationRadians));
         acceleration.y -= (SHIP_THRUST * cos(rotationRadians)); 
-        std::cout << "rotation: " << rotation << std::endl;
+        //std::cout << "rotation: " << rotation << std::endl;
     }
 
     Rigidbody::Simulate(timeStep);
+    Rigidbody::ScreenWrap();
 
     acceleration.x = 0;
     acceleration.y = 0;
@@ -58,15 +59,15 @@ void Ship::Simulate(float timeStep)
 bool Ship::IsColliding(const Rigidbody& other)
 {
     bool colliding = Rigidbody::IsColliding(other);
-    if (colliding)
-    {
-        // Reset ship position and state if colliding
-        pos.x = DISPLAY_WIDTH / 2;
-        pos.y = DISPLAY_HEIGHT / 2;
-        rotation = 0.0f;
-        velocity.x = 0;
-        velocity.y = 0;
-    }
+    //if (colliding)
+    //{
+    //    // Reset ship position and state if colliding
+    //    pos.x = DISPLAY_WIDTH / 2;
+    //    pos.y = DISPLAY_HEIGHT / 2;
+    //    rotation = 0.0f;
+    //    velocity.x = 0;
+    //    velocity.y = 0;
+    //}
     return colliding;
 }
 

@@ -1,35 +1,60 @@
 ﻿#include "Asteroid.h"
 #include <cstdlib>
 #include <ctime>
+#include "Engine.h"
 
-Asteroid::Asteroid(int i) : Rigidbody()
+
+
+Asteroid::Asteroid(Engine* engine) : Rigidbody()
 {
-    name = "Asteroid";
-    srand(static_cast<unsigned int>(time(nullptr)) + i * i + i);
 
-    float x = rand() % DISPLAY_WIDTH;
-    float y = rand() % DISPLAY_HEIGHT;
-    float vx = rand() % 100;
-    float vy = rand() % 100;
+	this->type = ObjectType::ASTEROID;
+    // Define the circle radius outside the screen space
 
-    pos.x = x;
-    pos.y = y;
+    // Random angle for spawning on the circle
+    float angle = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2 * M_PI;
 
-    int random = rand() % 100;
-    rotation_speed = static_cast<float>(random - 50) * 0.0005f;
+    // Calculate spawn position
+    pos.x = SPAWN_RADIUS * cos(angle) + DISPLAY_WIDTH / 2;
+    pos.y = SPAWN_RADIUS * sin(angle) + DISPLAY_HEIGHT / 2;
 
-    random = rand() % 100;
-    scale = 1.0f + (static_cast<float>(random - 50) / 100.0f);
 
-    radius = (scale * 12.0f);
+	// Define the target area size
+    const float targetAreaSize = 300.0f; // The size of the target area
+    const float halfArea = targetAreaSize / 2.0f;
 
-    velocity.x = ((vx - 50) / 2.0f);
-    velocity.y = ((vy - 50) / 2.0f);
+    // Calculate direction towards the center of the screen
+    Vector2 center(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2);
+    Vector2 randomOffset((rand() % static_cast<int>(targetAreaSize)) - halfArea, 
+                         (rand() % static_cast<int>(targetAreaSize)) - halfArea);
+
+    Vector2 targetPosition = center + randomOffset;
+
+    Vector2 direction = targetPosition - pos;
+    direction.Normalize();
+
+    // Set velocity towards the center
+    float speed = 0.5f;
+    velocity = direction * speed;
+
+    // Set rotation speed and scale randomly
+    rotation_speed = (rand() % 101 - 50) * 0.0005f;
+    scale = 1.0f + (rand() % 101 - 50) / 100.0f;
+    radius = (scale * 20.0f);
+
 }
 
 void Asteroid::Simulate(float timeStep)
 {
     Rigidbody::Simulate(timeStep);
+    if(hasEnteredScreen)
+        Rigidbody::ScreenWrap();
+
+    if(Rigidbody::ScreenWrapCheck())
+    {
+    	hasEnteredScreen = true;
+	}
+
     rotation += rotation_speed;
 }
 
