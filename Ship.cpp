@@ -76,6 +76,6 @@ void Ship::Draw(SDL_Renderer* renderer)
     if (sprite)
     {
         SDL_Rect destRect = { (int)pos.x - 25, (int)pos.y - 25, 50, 50 };
-        SDL_RenderCopyEx(renderer, sprite, nullptr, &destRect, rotation, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer, sprite.get(), nullptr, &destRect, rotation, nullptr, SDL_FLIP_NONE);
     }
 }

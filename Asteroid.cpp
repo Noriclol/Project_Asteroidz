@@ -70,6 +70,6 @@ void Asteroid::Draw(SDL_Renderer* renderer)
         	static_cast<int>(50 * scale),
         	static_cast<int>(50 * scale)
         };
-        SDL_RenderCopyEx(renderer, sprite, nullptr, &destRect, rotation, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer, sprite.get(), nullptr, &destRect, rotation, nullptr, SDL_FLIP_NONE);
     }
 }

@@ -9,7 +9,7 @@
 Engine* engine = nullptr;
 
 
-
+// Instructions for the player meant to be displayed in the console
 void StartText()
 {
 	std::cout << "Welcome to Asteroids!" << std::endl;
@@ -23,12 +23,12 @@ void StartText()
 }
 
 
+
 void Run() {
 
+
+
     bool isRunning = true;
-
-    
-
     while (isRunning) 
     {
 		engine->ClearScreen();
@@ -38,32 +38,39 @@ void Run() {
         {
     		case GameState::LOADING:
 
+                //BOOTING THE GAME
     			StartText();
     			engine->SpawnScene();
 				engine->gameState = GameState::READY;
 	            break;
 
             case GameState::READY:
-
+                // handle input so we can start game
                 isRunning = engine->HandleInput();
+
+                //Drawcall
     			engine->Draw();
 	            break;
 
             case GameState::RUNNING:
 
-
+                // wave check
                 if(engine->timeManager->GetGameTime() > engine->timeSinceLastWave + engine->waveDelay && 
                     engine->asteroidsDestroyedThisWave == engine->asteroidsCreatedThisWave)
                 {
 					engine->SpawnWave(engine->waveCount);
                 }
-
+                //handling input and setting isRunning to false if the right keystroke is detected
 				isRunning = engine->HandleInput();
+                
+                //update time
 				engine->timeManager->Update();
 
+                //check collisions and applying the delta time to gameobjects.
 				engine->CheckCollisions();
                 engine->UpdateGameObjects(engine->timeManager->GetDeltaTime());
 				
+                //Drawcall
 				engine->Draw();
 
 	            break;
@@ -85,6 +92,7 @@ void Run() {
 
 int main(int argc, char* argv[])
 {
+
 	engine = new Engine();
 
     if (!engine->Initialize()) 

@@ -6,6 +6,7 @@
 #include "SDL.h"
 #include "constants.h"
 
+//homemade vector2 
 struct Vector2
 {
     float x;
@@ -87,6 +88,7 @@ inline Vector2 operator*(float lhs, const Vector2& rhs)
     return Vector2(lhs * rhs.x, lhs * rhs.y);
 }
 
+// Base Rigidbody Gameobject
 class Rigidbody
 {
 public:

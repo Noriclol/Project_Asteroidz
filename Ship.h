@@ -1,11 +1,11 @@
 ﻿#pragma once
 
 #include "Rigidbody.h"
-
+#include <memory>  // Include for std::shared_ptr
 class Ship : public Rigidbody
 {
 public:
-    SDL_Texture* sprite = nullptr;  // Adjust this to use SDL2 textures
+    std::shared_ptr<SDL_Texture> sprite = nullptr;  // Adjust this to use SDL2 textures
     bool isThrusting;
     int turn;
 

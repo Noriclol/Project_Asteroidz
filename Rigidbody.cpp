@@ -73,11 +73,18 @@ bool Rigidbody::ScreenWrap()
     return false;
 }
 
-bool Rigidbody::IsColliding(const Rigidbody& other)
+
+
+inline bool Rigidbody::IsColliding(const Rigidbody& other)
 {
-    int xDiff = pos.x - other.pos.x;
-    int yDiff = pos.y - other.pos.y;
-    int radii = radius + other.radius;
+    float xDiff = pos.x - other.pos.x;
+    float yDiff = pos.y - other.pos.y;
+    float radii = radius + other.radius;
+
+    //if (abs(xDiff) > radii || abs(yDiff) > radii) {
+    //    return false;
+    //}
+
 
     return (xDiff * xDiff) + (yDiff * yDiff) < radii * radii;
 }

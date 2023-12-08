@@ -1,6 +1,6 @@
 #include "Engine.h"
 #include <iostream>
-
+#include <memory>
 Engine::~Engine()
 {
 	CleanScene();
@@ -13,6 +13,7 @@ Engine::~Engine()
 
 bool Engine::Initialize()
 {
+    // Try Init
 	if (!Initialize_Renderer())
 	{
 		return false;
@@ -42,6 +43,7 @@ bool Engine::Initialize_Managers()
 
 bool Engine::Initialize_Renderer()
 {
+    //Initialize SDL stuff
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) 
     {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
@@ -65,7 +67,7 @@ bool Engine::Initialize_Renderer()
 }
 
 
-
+//Check if position is to close to any of the objects in the scene
 bool Engine::IsPositionOccupied(Vector2 pos, float radius)
 {
     for (Rigidbody* obj : gameObjects)
@@ -80,12 +82,15 @@ bool Engine::IsPositionOccupied(Vector2 pos, float radius)
     return false;
 }
 
-
+//this function used to contain more than just the player spawning. however since alot of that has been moved to spawn scene only player remains
 bool Engine::SpawnScene()
 {
 	// Create player
 	ship = new Ship();
-	ship->sprite = t_ship;
+
+    if (t_ship != nullptr) {
+        ship->sprite = std::shared_ptr<SDL_Texture>(t_ship, SDL_DestroyTexture);
+    }
 	AddGameObject(ship);
 	return true;
 }
@@ -101,11 +106,13 @@ void Engine::SpawnWave(int wave)
     bool waveComplete = false;
     int asteroidsSpawned = 0;
 
+    //while the wave is being spawned
     while (!waveComplete)
     {
         if(asteroidsSpawned == WAVE_BASE_COUNT + waveCount * WAVE_INCREMENT)
 	        waveComplete = true;
 
+        //Spawn more asteroids on a timer
         else
         {
         	if (timeSinceLastSpawn + timeManager->GetGameTime() > timeSinceLastSpawn + spawnDelay)
@@ -123,7 +130,7 @@ void Engine::SpawnWave(int wave)
 }
 
 
-
+//added
 bool Engine::CleanScene()
 {
 	for (Rigidbody* obj : gameObjects)
@@ -147,10 +154,12 @@ bool Engine::HandleInput()
 	SDL_Event e;
     while (SDL_PollEvent(&e) != 0) 
     {
+        //if red button on window is pressed
         if (e.type == SDL_QUIT) 
         {
             return false; // Exit the game loop
         }
+        //All the keypresses
         if (e.type == SDL_KEYDOWN)
         {
             switch(e.key.keysym.sym)
@@ -182,7 +191,7 @@ bool Engine::HandleInput()
 
 
 	const Uint8* state = SDL_GetKeyboardState(nullptr);
-
+    //specifically ship input as the other method of fetching input had a delay after pressing that made an action only happen once and then delay before happening continuisly
     if (gameState == GameState::RUNNING)
     {
 
@@ -196,6 +205,7 @@ bool Engine::HandleInput()
 	    ship->turn = 0;
 	    ship->isThrusting = false;
 
+        // Ship Input
 	    if (state[SDL_SCANCODE_RIGHT])
 	    {
 	        ship->turn += 1;
@@ -210,7 +220,6 @@ bool Engine::HandleInput()
 	        ship->isThrusting = true;
 	    }
     }
-
     return true;
 }
 
@@ -241,7 +250,10 @@ void Engine::SpawnProjectile()
 void Engine::SpawnAsteroid()
 {
 	Asteroid* asteroid = new Asteroid(this);
-	asteroid->sprite = t_asteroid;
+
+    if (t_asteroid != nullptr) {
+        asteroid->sprite = std::shared_ptr<SDL_Texture>(t_asteroid, SDL_DestroyTexture);
+    }
 	AddGameObject(asteroid);
     timeSinceLastSpawn = timeManager->GetGameTime();
 }
@@ -330,18 +342,24 @@ void Engine::Draw()
 
 
 
-
+//Collision checking
 void Engine::CheckCollisions()
 {
     for (size_t i = 0; i < gameObjects.size(); i++)
     {
         for (size_t j = i + 1; j < gameObjects.size(); j++)
         {
+            //Checking every gameobject with every other gameobject.
             Rigidbody* objA = gameObjects[i];
             Rigidbody* objB = gameObjects[j];
             
+            //if Colliding
             if (objA->IsColliding(*objB))
             {
+                // Checking what type of collision
+
+
+                //Projectile x Asteroid
                 if ((objA->type == ObjectType::PROJECTILE && objB->type == ObjectType::ASTEROID) ||
                     (objA->type == ObjectType::ASTEROID && objB->type == ObjectType::PROJECTILE))
                 {
@@ -358,6 +376,7 @@ void Engine::CheckCollisions()
                     	timeSinceLastWave = timeManager->GetGameTime();
 					}
                 }   
+                //Asteroid x Asteroid
                 else if (objA->type == ObjectType::ASTEROID && objB->type == ObjectType::ASTEROID)
                 {
                     // Handle asteroid-asteroid collision
@@ -389,6 +408,7 @@ void Engine::CheckCollisions()
                     objA->velocity -= impulseA;
                     objB->velocity += impulseB;
                 }
+                // Asteroid x Ship
                 else if ((objA->type == ObjectType::ASTEROID && objB->type == ObjectType::SHIP) ||
 						(objA->type == ObjectType::SHIP && objB->type == ObjectType::ASTEROID))
 					 {
