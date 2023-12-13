@@ -136,6 +136,7 @@
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Rigidbody.cpp" />
     <ClCompile Include="Ship.cpp" />
+    <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="TimeManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +146,7 @@
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Rigidbody.h" />
     <ClInclude Include="Ship.h" />
+    <ClInclude Include="Singleton.h" />
     <ClInclude Include="TimeManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

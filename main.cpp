@@ -6,7 +6,7 @@
 #include "Engine.h"
 #include "Ship.h"
 
-Engine* engine = nullptr;
+//Engine* engine = nullptr;
 
 
 // Instructions for the player meant to be displayed in the console
@@ -27,7 +27,7 @@ void StartText()
 void Run() {
 
 
-
+    Engine* engine = Engine::Instance();
     bool isRunning = true;
     while (isRunning) 
     {
@@ -40,7 +40,7 @@ void Run() {
 
                 //BOOTING THE GAME
     			StartText();
-    			engine->SpawnScene();
+    			engine->SpawnShip();
 				engine->gameState = GameState::READY;
 	            break;
 
@@ -93,7 +93,9 @@ void Run() {
 int main(int argc, char* argv[])
 {
 
-	engine = new Engine();
+    //engine = new Engine();
+
+    Engine* engine = Engine::Instance();
 
     if (!engine->Initialize()) 
     {

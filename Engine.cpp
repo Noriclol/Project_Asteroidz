@@ -1,6 +1,15 @@
 #include "Engine.h"
 #include <iostream>
 #include <memory>
+
+
+Engine::Engine() {
+    // Initialization code
+}
+
+
+
+
 Engine::~Engine()
 {
 	CleanScene();
@@ -40,7 +49,6 @@ bool Engine::Initialize_Managers()
 	return true;
 }
 
-
 bool Engine::Initialize_Renderer()
 {
     //Initialize SDL stuff
@@ -66,7 +74,6 @@ bool Engine::Initialize_Renderer()
     return true;
 }
 
-
 //Check if position is to close to any of the objects in the scene
 bool Engine::IsPositionOccupied(Vector2 pos, float radius)
 {
@@ -83,7 +90,7 @@ bool Engine::IsPositionOccupied(Vector2 pos, float radius)
 }
 
 //this function used to contain more than just the player spawning. however since alot of that has been moved to spawn scene only player remains
-bool Engine::SpawnScene()
+bool Engine::SpawnShip()
 {
 	// Create player
 	ship = new Ship();
@@ -188,7 +195,6 @@ bool Engine::HandleInput()
             }
         }
     }
-
 
 	const Uint8* state = SDL_GetKeyboardState(nullptr);
     //specifically ship input as the other method of fetching input had a delay after pressing that made an action only happen once and then delay before happening continuisly

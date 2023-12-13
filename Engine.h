@@ -1,7 +1,14 @@
 #pragma once
+
+#ifndef ENGINE_H
+#define ENGINE_H
+
+
 #include "SDL.h"
 #include <cstdio>
 #include <vector>
+
+#include "Singleton.h"
 
 //Managers
 #include "TimeManager.h"
@@ -14,9 +21,26 @@
 
 
 
-class Engine
+class Engine : public Singleton
 {
+protected:
+	Engine();
+
 public:
+
+	Engine(const Engine&) = delete;
+	Engine& operator=(const Engine&) = delete;
+
+	static Engine* Instance() {
+		if (instance == nullptr) {
+			instance = new Engine();
+		}
+		return static_cast<Engine*>(instance);
+	}
+
+
+
+
 
 	// Renderer
 	SDL_Window* window = nullptr;
@@ -70,7 +94,6 @@ public:
 
 
 	//Scene Management
-	bool SpawnScene();
 	void SpawnWave(int wave);
 	bool CleanScene();
 
@@ -92,6 +115,7 @@ public:
 
 	// GameObjects
     void AddGameObject(Rigidbody* obj);
+	bool SpawnShip();
 	void SpawnProjectile();
 	void SpawnAsteroid();
 	void UpdateGameObjects(float elapsedTime);
@@ -100,3 +124,4 @@ public:
 	SDL_Texture* LoadTexture(const char* filepath);
 };
 
+#endif // ENGINE_H
